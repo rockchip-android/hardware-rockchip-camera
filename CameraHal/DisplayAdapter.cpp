@@ -238,7 +238,7 @@ int DisplayAdapter::cameraDisplayBufferCreate(int width, int height, const char 
     if (err != 0) {
         LOGE("%s(%d): %s(err:%d) native_window_set_usage failed", __FUNCTION__,__LINE__, strerror(-err), -err);
 
-        if ( ENODEV == err ) {
+        if ( -ENODEV == err ) {
             LOGE("%s(%d): Preview surface abandoned !",__FUNCTION__,__LINE__);
             mANativeWindow = NULL;
         }
@@ -291,7 +291,7 @@ int DisplayAdapter::cameraDisplayBufferCreate(int width, int height, const char 
     if (err != 0) {
         LOGE("%s(%d): %s(err:%d) native_window_set_buffers_geometry failed", __FUNCTION__,__LINE__, strerror(-err), -err);
 
-        if ( ENODEV == err ) {
+        if ( -ENODEV == err ) {
             LOGE("%s(%d): Preview surface abandoned !",__FUNCTION__,__LINE__);
             mANativeWindow = NULL;
         }
@@ -309,9 +309,10 @@ int DisplayAdapter::cameraDisplayBufferCreate(int width, int height, const char 
         err = mANativeWindow->dequeue_buffer(mANativeWindow, (buffer_handle_t**)&hnd, &stride);
 
         if (err != 0) {
-            LOGE("%s(%d): %s(err:%d) dequeueBuffer failed", __FUNCTION__,__LINE__, strerror(-err), -err);
+            LOGE("%s(%d): %s(err:%d) dequeueBuffer failed, index=%d,hnd=0x%x, stride=0x%x,mANativeWindow=0x%x",
+                __FUNCTION__,__LINE__, strerror(-err), -err, i, hnd, stride,mANativeWindow);
 
-            if ( ENODEV == err ) {
+            if ( -ENODEV == err ) {
                 LOGE("%s(%d): Preview surface abandoned !",__FUNCTION__,__LINE__);
                 mANativeWindow = NULL;
             }
@@ -336,6 +337,8 @@ int DisplayAdapter::cameraDisplayBufferCreate(int width, int height, const char 
 	#else
     	#if (defined(TARGET_RK312x) || defined(TARGET_RK3328)) && defined(ANDROID_7_X)
         mDisplayBufInfo[i].phy_addr = mDisplayBufInfo[i].priv_hnd->share_fd;
+        #elif (defined(TARGET_RK3399) || defined(TARGET_RK3288)) && defined(ANDROID_7_X)
+        mDisplayBufInfo[i].phy_addr = mDisplayBufInfo[i].priv_hnd->prime_fd;
         #else
 		mDisplayBufInfo[i].phy_addr = 0x00;
         #endif
@@ -366,15 +369,21 @@ int DisplayAdapter::cameraDisplayBufferCreate(int width, int height, const char 
     LOG_FUNCTION_NAME_EXIT    
     return err; 
  fail:
-        for (i = 0; i<total; i++) {
-            if (mANativeWindow && mDisplayBufInfo && mDisplayBufInfo[i].buffer_hnd) {
-                err = mANativeWindow->cancel_buffer(mANativeWindow, (buffer_handle_t*)mDisplayBufInfo[i].buffer_hnd);
-                if (err != 0) {
-                  LOGE("%s(%d): cancelBuffer failed w/ error 0x%08x",__FUNCTION__,__LINE__, err);                  
-                }
+    for (i = 0; i<total; i++) {
+        if (mANativeWindow && mDisplayBufInfo && mDisplayBufInfo[i].buffer_hnd) {
+            err = mANativeWindow->cancel_buffer(mANativeWindow, (buffer_handle_t*)mDisplayBufInfo[i].buffer_hnd);
+            if (err != 0) {
+              LOGE("%s(%d): cancelBuffer failed, %s(err:%d)",__FUNCTION__,__LINE__, strerror(-err), -err);                  
             }
+            if (mDisplayBufInfo[i].lock)
+                delete mDisplayBufInfo[i].lock;
         }
-    
+    }
+	if (mDisplayBufInfo){
+        free(mDisplayBufInfo);
+        mDisplayBufInfo = NULL;
+        mDislayBufNum = 0;
+    }
     LOGE("%s(%d): exit with error(%d)!",__FUNCTION__,__LINE__,err);
     return err;
 }

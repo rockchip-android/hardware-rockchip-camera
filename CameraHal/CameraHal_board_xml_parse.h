@@ -266,7 +266,7 @@ struct rk_vcm_info{
 
 struct rk_flash_info{
     rk_flash_info():mFlashI2cAddr(0){};
-    ~rk_flash_info();
+    ~rk_flash_info(){};
     
     char mFlashName[CAMSYS_NAME_LEN];
     unsigned int mFlashI2cAddr;
@@ -382,7 +382,7 @@ struct rk_face_detect_info{
     rk_face_detect_info()
             :mFaceDetectSupport(0),
             mFaceMaxNum(1){};
-    ~rk_face_detect_info();
+    ~rk_face_detect_info(){};
     int mFaceDetectSupport;
     int mFaceMaxNum;
             

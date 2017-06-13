@@ -889,8 +889,8 @@ int camera_get_number_of_cameras(void)
 					struct v4l2_fmtdesc fmtdesc;
 					unsigned int width, height;
 					unsigned int sensor_resolution_w=0,sensor_resolution_h=0;
-					unsigned int CameraHal_SupportFmt[6];
-					unsigned int mCamDriverSupportFmt[CAMERA_DRIVER_SUPPORT_FORMAT_MAX];
+					unsigned int CameraHal_SupportFmt[6]={0};
+					unsigned int mCamDriverSupportFmt[CAMERA_DRIVER_SUPPORT_FORMAT_MAX]={0};
 					unsigned int mCamDriverPreviewFmt=0;
 					unsigned int maxfps;
 
@@ -969,6 +969,10 @@ int camera_get_number_of_cameras(void)
 					
 					if (CameraHal_SupportFmt[i] == 0x00) {
 						mCamDriverPreviewFmt = 0;
+						delete pNewCamInfo;
+						delete pDVResolution;
+						LOGE("mCamDriverPreviewFmt = %d, no support fmt",mCamDriverPreviewFmt);
+						goto loop_continue;
 					} else {  
 						mCamDriverPreviewFmt = CameraHal_SupportFmt[i];
 					}

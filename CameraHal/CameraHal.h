@@ -728,10 +728,14 @@ v1.0x4f.0:
   v1.0x4f.0xe
      1) soc camera no need frames filter for cts test.
      2) cts test case support getSupportedVideoSize return null.
+  v1.0x4f.0xf
+     1) display buffers use priv_hnd->prime_fd as buffer fd for platform 3288&3399 android7.1.
+     2) when the format of UVC is not supported by CameraHal, show error tip and bypass it.
+     3) buf free operation in CameraHal_Mem has bug, fix it.
 */
 
 
-#define CONFIG_CAMERAHAL_VERSION KERNEL_VERSION(1, 0x4f, 0xe)
+#define CONFIG_CAMERAHAL_VERSION KERNEL_VERSION(1, 0x4f, 0xf)
 
 
 /*  */

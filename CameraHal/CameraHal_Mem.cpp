@@ -16,14 +16,14 @@ MemManagerBase::MemManagerBase()
 	mPreviewBufferInfo = NULL;
 	mRawBufferInfo = NULL;
 	mJpegBufferInfo = NULL;
-	mJpegBufferInfo = NULL;
+	mVideoEncBufferInfo = NULL;
 }
 MemManagerBase::~MemManagerBase()
 {
 	mPreviewBufferInfo = NULL;
 	mRawBufferInfo = NULL;
 	mJpegBufferInfo = NULL;
-	mJpegBufferInfo = NULL;
+	mVideoEncBufferInfo = NULL;
 }
 
 unsigned int MemManagerBase::getBufferAddr(enum buffer_type_enum buf_type, unsigned int buf_idx, buffer_addr_t addr_type)
@@ -605,8 +605,34 @@ int IonDmaMemManager::createIonBuffer(struct bufferinfo_s* ionbuf)
 			temp_handle = (long)tmpalloc->ion_hdl;
             ion_free(client_fd, (ion_user_handle_t)temp_handle);
         }
-        free(tmpalloc);
-        free(tmp_buf);
+    	switch(ionbuf->mBufType){
+        	case PREVIEWBUFFER:
+                if(mPreviewBufferInfo){
+	                free(mPreviewBufferInfo);
+	        		mPreviewBufferInfo = NULL;
+                }
+        		break;
+        	case RAWBUFFER:
+                if(mRawBufferInfo){
+	                free(mRawBufferInfo);
+	        		mRawBufferInfo = NULL;
+                }
+        		break;
+        	case JPEGBUFFER:
+                if(mJpegBufferInfo){
+	                free(mJpegBufferInfo);
+	        		mJpegBufferInfo = NULL;
+                }
+        		break;
+        	case VIDEOENCBUFFER:
+                if(mVideoEncBufferInfo){
+	                free(mVideoEncBufferInfo);
+	        		mVideoEncBufferInfo = NULL;
+                }
+        		break;
+        	default:
+        		break;
+    	}
     }
     return ret;
 }
@@ -654,6 +680,8 @@ void IonDmaMemManager::destroyIonBuffer(buffer_type_enum buftype)
             close(tmpalloc->map_fd);
 			temp_handle = (long)tmpalloc->ion_hdl;
             err = ion_free(client_fd, (ion_user_handle_t)temp_handle);
+            if (err)
+                LOGE("ion_free failed !");
         }
         tmpalloc++;
     }
@@ -718,6 +746,10 @@ int IonDmaMemManager::createVideoEncBuffer(struct bufferinfo_s* videoencbuf)
 			mVideoEncBufferInfo->mPhyBaseAddr,mVideoEncBufferInfo->mVirBaseAddr,mVideoEncBufferInfo->mBufferSizes);
 	} else {
 		LOGE("Video buffer alloc failed");
+        if (mVideoEncData){
+		    free(mVideoEncData);
+		    mVideoEncData = NULL;
+        }
 	}
 	LOG_FUNCTION_NAME_EXIT
 	return ret;
@@ -763,6 +795,10 @@ int IonDmaMemManager::createPreviewBuffer(struct bufferinfo_s* previewbuf)
             mPreviewBufferInfo->mPhyBaseAddr,mPreviewBufferInfo->mVirBaseAddr,mPreviewBufferInfo->mBufferSizes);
     } else {
         LOGE("Preview buffer alloc failed");
+        if (mPreviewData){
+		    free(mPreviewData);
+		    mPreviewData = NULL;
+        }
     }
     LOG_FUNCTION_NAME_EXIT
 	return ret;
@@ -801,6 +837,10 @@ int IonDmaMemManager::createRawBuffer(struct bufferinfo_s* rawbuf)
             mRawBufferInfo->mPhyBaseAddr,mRawBufferInfo->mVirBaseAddr,mRawBufferInfo->mBufferSizes);
     } else {
         LOGE("Raw buffer alloc failed");
+        if (mRawData){
+		    free(mRawData);
+		    mRawData = NULL;
+        }
     }
     LOG_FUNCTION_NAME_EXIT
 	return ret;
@@ -838,6 +878,10 @@ int IonDmaMemManager::destroyRawBuffer()
             mJpegBufferInfo->mPhyBaseAddr,mJpegBufferInfo->mVirBaseAddr,mJpegBufferInfo->mBufferSizes);
     } else {
         LOGE("Jpeg buffer alloc failed");
+        if (mJpegData){
+		    free(mJpegData);
+		    mJpegData = NULL;
+        }
     }
     LOG_FUNCTION_NAME_EXIT
 	return ret;
@@ -1010,8 +1054,34 @@ int GrallocDrmMemManager::createGrallocDrmBuffer(struct bufferinfo_s* grallocbuf
 #endif
 			mOps->free(mHandle,*tmpalloc);
         }
-        free(*tmpalloc);
-        free(tmp_buf);
+    	switch(grallocbuf->mBufType){
+        	case PREVIEWBUFFER:
+                if(mPreviewBufferInfo){
+	                free(mPreviewBufferInfo);
+	        		mPreviewBufferInfo = NULL;
+                }
+        		break;
+        	case RAWBUFFER:
+                if(mRawBufferInfo){
+	                free(mRawBufferInfo);
+	        		mRawBufferInfo = NULL;
+                }
+        		break;
+        	case JPEGBUFFER:
+                if(mJpegBufferInfo){
+	                free(mJpegBufferInfo);
+	        		mJpegBufferInfo = NULL;
+                }
+        		break;
+        	case VIDEOENCBUFFER:
+                if(mVideoEncBufferInfo){
+	                free(mVideoEncBufferInfo);
+	        		mVideoEncBufferInfo = NULL;
+                }
+        		break;
+        	default:
+        		break;
+    	}
     }
     return ret;
 }
@@ -1091,7 +1161,6 @@ void GrallocDrmMemManager::destroyGrallocDrmBuffer(buffer_type_enum buftype)
             break;
 	}
 
-    
 }
 
 
@@ -1119,6 +1188,10 @@ int GrallocDrmMemManager::createVideoEncBuffer(struct bufferinfo_s* videoencbuf)
 			mVideoEncBufferInfo->mPhyBaseAddr,mVideoEncBufferInfo->mVirBaseAddr,mVideoEncBufferInfo->mBufferSizes);
 	} else {
 		LOGE("Video buffer alloc failed");
+        if (mVideoEncData){
+		    free(mVideoEncData);
+		    mVideoEncData = NULL;
+        }
 	}
 	LOG_FUNCTION_NAME_EXIT
 	return ret;
@@ -1164,6 +1237,10 @@ int GrallocDrmMemManager::createPreviewBuffer(struct bufferinfo_s* previewbuf)
             mPreviewBufferInfo->mPhyBaseAddr,mPreviewBufferInfo->mVirBaseAddr,mPreviewBufferInfo->mBufferSizes);
     } else {
         LOGE("Preview buffer alloc failed");
+        if (mPreviewData){
+		    free(mPreviewData);
+		    mPreviewData = NULL;
+        }
     }
     LOG_FUNCTION_NAME_EXIT
 	return ret;
@@ -1203,6 +1280,10 @@ int GrallocDrmMemManager::createRawBuffer(struct bufferinfo_s* rawbuf)
             mRawBufferInfo->mPhyBaseAddr,mRawBufferInfo->mVirBaseAddr,mRawBufferInfo->mBufferSizes);
     } else {
         LOGE("Raw buffer alloc failed");
+        if (mRawData){
+		    free(mRawData);
+		    mRawData = NULL;
+        }
     }
     LOG_FUNCTION_NAME_EXIT
 	return ret;
@@ -1240,6 +1321,10 @@ int GrallocDrmMemManager::destroyRawBuffer()
             mJpegBufferInfo->mPhyBaseAddr,mJpegBufferInfo->mVirBaseAddr,mJpegBufferInfo->mBufferSizes);
     } else {
         LOGE("Jpeg buffer alloc failed");
+        if (mJpegData){
+		    free(mJpegData);
+		    mJpegData = NULL;
+        }
     }
     LOG_FUNCTION_NAME_EXIT
 	return ret;

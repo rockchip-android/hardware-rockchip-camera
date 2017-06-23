@@ -783,7 +783,7 @@ int CameraIspAdapter::setParameters(const CameraParameters &params_set,bool &isR
                 mParameters.set(CameraParameters::KEY_FOCUS_MODE, CameraParameters::FOCUS_MODE_AUTO);
             else 
                 mParameters.set(CameraParameters::KEY_FOCUS_MODE, CameraParameters::FOCUS_MODE_FIXED);
-            return BAD_VALUE;
+            //return BAD_VALUE;
         }
 
     }
@@ -967,6 +967,11 @@ void CameraIspAdapter::initDefaultParameters(int camFd)
 		} else {
 			uvnr.enable = false;
 		}
+
+        //720p previewsize  perform not well in this app, so remove it.
+        const char* cameraCallProcess = getCallingProcess();
+        if (strstr("com.campmobile.snowcamera", cameraCallProcess))
+            parameterString.removeAll(",1280x720");
 
         params.set(CameraParameters::KEY_PREVIEW_SIZE,string);
         params.set(CameraParameters::KEY_SUPPORTED_PREVIEW_SIZES, parameterString.string());        

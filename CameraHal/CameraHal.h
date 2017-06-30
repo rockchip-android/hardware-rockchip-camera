@@ -732,10 +732,13 @@ v1.0x4f.0:
      1) display buffers use priv_hnd->prime_fd as buffer fd for platform 3288&3399 android7.1.
      2) when the format of UVC is not supported by CameraHal, show error tip and bypass it.
      3) buf free operation in CameraHal_Mem has bug, fix it.
+  v1.0x50.0
+     1) remove GRALLOC_USAGE_HW_TEXTURE|GRALLOC_USAGE_HW_RENDER flag (e.g. gralloc not use cache)
+        for rk3368 andrdoid7.1 to bypass gralloc DDK bug.
 */
 
 
-#define CONFIG_CAMERAHAL_VERSION KERNEL_VERSION(1, 0x4f, 0xf)
+#define CONFIG_CAMERAHAL_VERSION KERNEL_VERSION(1, 0x50, 0x0)
 
 
 /*  */
@@ -845,13 +848,19 @@ v1.0x4f.0:
 #define KEY_PREVIEW_W_FORCE  "rk-previwe-w-force"
 #define KEY_PREVIEW_H_FORCE  "rk-previwe-h-force"
 
-
+#if defined(TARGET_RK3368) && defined(ANDROID_7_X)
+#define CAMHAL_GRALLOC_USAGE GRALLOC_USAGE_SW_WRITE_OFTEN | \
+                             GRALLOC_USAGE_SW_READ_OFTEN /*| \
+                             GRALLOC_USAGE_SW_WRITE_MASK| \
+                             GRALLOC_USAGE_SW_READ_RARELY*/ 
+#else
 #define CAMHAL_GRALLOC_USAGE GRALLOC_USAGE_HW_TEXTURE | \
                              GRALLOC_USAGE_HW_RENDER | \
                              GRALLOC_USAGE_SW_WRITE_OFTEN | \
                              GRALLOC_USAGE_SW_READ_OFTEN /*| \
                              GRALLOC_USAGE_SW_WRITE_MASK| \
                              GRALLOC_USAGE_SW_READ_RARELY*/ 
+#endif
 #define CAMERA_IPP_NAME                  "/dev/rk29-ipp"
 
 

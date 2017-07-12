@@ -90,7 +90,7 @@ LOCAL_SRC_FILES:=\
 	SensorListener.cpp\
 
 ifeq ($(strip $(BOARD_USE_DRM)), true)
-ifneq ($(filter rk3368 rk3399 rk3288, $(strip $(TARGET_BOARD_PLATFORM))), )
+ifneq ($(filter rk3368 rk3399 rk3288 rk3366, $(strip $(TARGET_BOARD_PLATFORM))), )
 LOCAL_SRC_FILES += \
 	camera_mem_gralloc.cpp\
 	camera_mem.cpp
@@ -289,6 +289,15 @@ LOCAL_CFLAGS += -DTARGET_RK32
 LOCAL_CFLAGS += -DHAL_MOCKUP
 endif
 
+ifeq ($(strip $(TARGET_BOARD_PLATFORM)),rk3366)
+LOCAL_CFLAGS += -DTARGET_RK3366
+ifeq ($(strip $(TARGET_2ND_ARCH)), )
+LOCAL_CFLAGS += -DHAVE_ARM_NEON
+endif
+LOCAL_CFLAGS += -DTARGET_RK32
+LOCAL_CFLAGS += -DHAL_MOCKUP
+endif
+
 ifneq ($(filter rk322x rk312x rk3126c rk3128 px3se, $(strip $(TARGET_BOARD_PLATFORM))), )
 #LOCAL_CFLAGS += -DTARGET_BOARD_PLATFORM_RK30XX
 LOCAL_CFLAGS += -DTARGET_RK312x
@@ -348,7 +357,7 @@ LOCAL_CFLAGS += -DANDROID_7_X
 endif
 
 ifeq ($(strip $(BOARD_USE_DRM)), true)
-ifneq ($(filter rk3368 rk3399 rk3288, $(strip $(TARGET_BOARD_PLATFORM))), )
+ifneq ($(filter rk3368 rk3399 rk3288 rk3366, $(strip $(TARGET_BOARD_PLATFORM))), )
 LOCAL_CFLAGS +=-DRK_DRM_GRALLOC=1
 endif
 endif

@@ -84,7 +84,7 @@
 #if (CONFIG_CAMERA_INVALIDATE_RGA==0)
 #include <hardware/rga.h>
 #endif
-#elif (defined(TARGET_RK3399) || defined(TARGET_RK3288)) && defined(ANDROID_7_X)
+#elif (defined(TARGET_RK3399) || defined(TARGET_RK3288) || defined(TARGET_RK3366)) && defined(ANDROID_7_X)
 #include "../libgralloc/gralloc_drm_handle.h"
 #include <hardware/rga.h>
 #elif defined(TARGET_RK30) && defined(TARGET_BOARD_PLATFORM_RK30XXB)
@@ -735,10 +735,12 @@ v1.0x4f.0:
   v1.0x50.0
      1) remove GRALLOC_USAGE_HW_TEXTURE|GRALLOC_USAGE_HW_RENDER flag (e.g. gralloc not use cache)
         for rk3368 andrdoid7.1 to bypass gralloc DDK bug.
+  v1.0x50.1
+     1) fix rk3366 android7.1 compile error.
 */
 
 
-#define CONFIG_CAMERAHAL_VERSION KERNEL_VERSION(1, 0x50, 0x0)
+#define CONFIG_CAMERAHAL_VERSION KERNEL_VERSION(1, 0x50, 0x1)
 
 
 /*  */
@@ -872,7 +874,7 @@ v1.0x4f.0:
     #define NATIVE_HANDLE_TYPE             private_handle_t
     #define PRIVATE_HANDLE_GET_W(hd)       (hd->width)
     #define PRIVATE_HANDLE_GET_H(hd)       (hd->height)
-#elif (defined(TARGET_RK3399) || defined(TARGET_RK3288)) && defined(ANDROID_7_X)
+#elif (defined(TARGET_RK3399) || defined(TARGET_RK3288) || defined(TARGET_RK3366)) && defined(ANDROID_7_X)
     typedef struct gralloc_drm_handle_t    rk_gralloc_drm_handle_t;
     #define NATIVE_HANDLE_TYPE             rk_gralloc_drm_handle_t
     #define PRIVATE_HANDLE_GET_W(hd)       (hd->width)

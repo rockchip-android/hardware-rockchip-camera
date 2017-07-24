@@ -783,8 +783,10 @@ int CameraIspAdapter::setParameters(const CameraParameters &params_set,bool &isR
                 mParameters.set(CameraParameters::KEY_FOCUS_MODE, CameraParameters::FOCUS_MODE_AUTO);
             else 
                 mParameters.set(CameraParameters::KEY_FOCUS_MODE, CameraParameters::FOCUS_MODE_FIXED);
-            //return BAD_VALUE;
-        }
+
+            if (mIsCtsTest)
+                return BAD_VALUE;
+            }
 
     }
   

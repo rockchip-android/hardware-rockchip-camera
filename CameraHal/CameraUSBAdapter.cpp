@@ -431,7 +431,7 @@ void CameraUSBAdapter::initDefaultParameters(int camFd)
     }else{
 		params.set(CameraParameters::KEY_MAX_NUM_DETECTED_FACES_HW,"2");
     }*/
-    #if defined(TARGET_RK322x) || defined(TARGET_RK312x)
+    #if defined(TARGET_RK322x) || defined(TARGET_RK312x) || defined(TARGET_RK3368)
         params.set(CameraParameters::KEY_MAX_NUM_DETECTED_FACES_HW,"0");
     #else
         params.set(CameraParameters::KEY_MAX_NUM_DETECTED_FACES_HW,"2");

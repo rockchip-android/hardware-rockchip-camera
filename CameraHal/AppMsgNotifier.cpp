@@ -1675,6 +1675,7 @@ return ret;
 int AppMsgNotifier::processPreviewDataCb(FramInfo_s* frame){
     int ret = 0;
     int pixFmt;
+    int err;
 	sp<MemoryHeapBase> mHeap;
     mDataCbLock.lock();
     if ((mMsgTypeEnabled & CAMERA_MSG_PREVIEW_FRAME) && mDataCb) {
@@ -1726,15 +1727,21 @@ int AppMsgNotifier::processPreviewDataCb(FramInfo_s* frame){
         }else{
 			#if defined(RK_DRM_GRALLOC)
             if (!strcmp("com.tencent.mobileqq:MSF",mCallingProcess)
-                || !strcmp("com.tencent.mobileqq:peak",mCallingProcess))
+                || !strcmp("com.tencent.mobileqq:peak",mCallingProcess)){
                 //workround fix qq self capture little video problem.
                 arm_camera_yuv420_scale_arm(V4L2_PIX_FMT_NV12, V4L2_PIX_FMT_NV21, (char*)(frame->vir_addr),
 					(char*)tmpPreviewMemory->data,frame->frame_width, frame->frame_height,mPreviewDataW, mPreviewDataH,
                     mDataCbFrontMirror,frame->zoom_value);
-            else
-			    rga_nv12_scale_crop(frame->frame_width, frame->frame_height, 
+            }else{
+			    err = rga_nv12_scale_crop(frame->frame_width, frame->frame_height,
 					(char*)(frame->vir_addr), (short int *)(tmpPreviewMemory->data), 
 					mPreviewDataW,mPreviewDataH,frame->zoom_value,mDataCbFrontMirror,true,!isYUV420p,0,true);
+                if (err){
+                    arm_camera_yuv420_scale_arm(V4L2_PIX_FMT_NV12, V4L2_PIX_FMT_NV12, (char*)(frame->vir_addr),
+                        (char*)(tmpPreviewMemory->data),frame->frame_width, frame->frame_height,
+                        mPreviewDataW,mPreviewDataH,mDataCbFrontMirror,frame->zoom_value);
+                 }
+            }
 			#else
             rga_nv12_scale_crop(frame->frame_width, frame->frame_height, 
 					(char*)(frame->vir_addr), (short int *)(tmpPreviewMemory->data), 
@@ -1778,7 +1785,7 @@ int AppMsgNotifier::processPreviewDataCb(FramInfo_s* frame){
 int AppMsgNotifier::processVideoCb(FramInfo_s* frame){
     int ret = 0,buf_index = -1;
 	long buf_phy = 0,buf_vir = 0;
-
+    int err;
 	if(mIsStoreMD == false){	
 	    //get one available buffer
 	    if((buf_index = mVideoBufferProvider->getOneAvailableBuffer(&buf_phy,&buf_vir)) == -1){
@@ -1802,15 +1809,20 @@ int AppMsgNotifier::processVideoCb(FramInfo_s* frame){
 	        }else{
 				#if defined(RK_DRM_GRALLOC)
 				if (frame->vir_addr_valid){
-		            rga_nv12_scale_crop(frame->frame_width, frame->frame_height,
+		            err = rga_nv12_scale_crop(frame->frame_width, frame->frame_height,
 		                                (char*)(frame->vir_addr), (short int *)buf_vir,
 		                                mRecordW,mRecordH,frame->zoom_value,false,true,false,0,frame->vir_addr_valid);
 	            } else{
 					long fd = mVideoBufferProvider->getBufShareFd(buf_index);
-					rga_nv12_scale_crop(frame->frame_width, frame->frame_height,
+					err = rga_nv12_scale_crop(frame->frame_width, frame->frame_height,
 										(char*)(frame->phy_addr), (short int *)fd,
 										mRecordW,mRecordH,frame->zoom_value,false,true,false,0,frame->vir_addr_valid);
 	            }
+                if (err){
+                    arm_camera_yuv420_scale_arm(V4L2_PIX_FMT_NV12, V4L2_PIX_FMT_NV12, (char*)(frame->vir_addr),
+                            (char*)(buf_vir),frame->frame_width, frame->frame_height,
+                            mRecordW,mRecordH,false,frame->zoom_value);
+                }
 				#else
 	            rga_nv12_scale_crop(frame->frame_width, frame->frame_height,
 	                                (char*)(frame->vir_addr), (short int *)buf_vir,
@@ -1843,14 +1855,19 @@ int AppMsgNotifier::processVideoCb(FramInfo_s* frame){
 		
 		#if defined(RK_DRM_GRALLOC)
 		if (frame->vir_addr_valid){
-		    rga_nv12_scale_crop(frame->frame_width, frame->frame_height,
+		    err = rga_nv12_scale_crop(frame->frame_width, frame->frame_height,
 		                (char*)(frame->vir_addr), (short int*)(mGrallocVideoBuf[buf_index]->vir_addr),
 		                mRecordW,mRecordH,frame->zoom_value,false,true,false,0,frame->vir_addr_valid);
 	    } else{
-    	    rga_nv12_scale_crop(frame->frame_width, frame->frame_height,
-                (char*)(frame->phy_addr), (short int*)(mGrallocVideoBuf[buf_index]->phy_addr),
-                mRecordW,mRecordH,frame->zoom_value,false,true,false,0,frame->vir_addr_valid);
+            err = rga_nv12_scale_crop(frame->frame_width, frame->frame_height,
+                        (char*)(frame->phy_addr), (short int*)(mGrallocVideoBuf[buf_index]->phy_addr),
+                        mRecordW,mRecordH,frame->zoom_value,false,true,false,0,frame->vir_addr_valid);
 	    }
+        if (err){
+            arm_camera_yuv420_scale_arm(V4L2_PIX_FMT_NV12, V4L2_PIX_FMT_NV12, (char*)(frame->vir_addr),
+                    (char*)(mGrallocVideoBuf[buf_index]->vir_addr),frame->frame_width, frame->frame_height,
+                    mRecordW,mRecordH,false,frame->zoom_value);
+        }
 		#else
         	#if (defined(TARGET_RK312x) || defined(TARGET_RK3328)) && defined(ANDROID_7_X)
 			    rga_nv12_scale_crop(frame->frame_width, frame->frame_height,

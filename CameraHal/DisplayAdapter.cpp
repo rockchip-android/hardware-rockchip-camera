@@ -771,16 +771,21 @@ display_receive_cmd:
 								int dst_stride = mDisplayBufInfo[queue_display_index].stride;
 
 								if (frame->vir_addr_valid){
-	                                rga_nv12_scale_crop(frame->frame_width, frame->frame_height,
+	                                err = rga_nv12_scale_crop(frame->frame_width, frame->frame_height,
 	                                        (char*)(frame->vir_addr), (short int *)(mDisplayBufInfo[queue_display_index].vir_addr),
 	                                        mDisplayWidth,mDisplayHeight,frame->zoom_value,false,true,false,dst_stride,frame->vir_addr_valid);
                                 } else{
     								int mem_fd = -1;
 									util_get_gralloc_buf_fd(*(mDisplayBufInfo[queue_display_index].buffer_hnd),&mem_fd);
-									rga_nv12_scale_crop(frame->frame_width, frame->frame_height,
+									err = rga_nv12_scale_crop(frame->frame_width, frame->frame_height,
 											(char*)(frame->phy_addr), (short int *)((long)(mem_fd)),
 											mDisplayWidth,mDisplayHeight,frame->zoom_value,false,true,false,dst_stride,frame->vir_addr_valid);
 								}
+                                if (err){
+                                    arm_camera_yuv420_scale_arm(V4L2_PIX_FMT_NV12, V4L2_PIX_FMT_NV12, (char*)(frame->vir_addr),
+                                        (char*)(mDisplayBufInfo[queue_display_index].vir_addr),frame->frame_width, frame->frame_height,
+                                        mDisplayWidth,mDisplayHeight,false,frame->zoom_value);
+                                }
 								#else
                                 #if (defined(TARGET_RK312x) || defined(TARGET_RK3328)) && defined(ANDROID_7_X)
                                 rga_nv12_scale_crop(frame->frame_width, frame->frame_height,

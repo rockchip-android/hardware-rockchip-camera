@@ -737,10 +737,12 @@ v1.0x4f.0:
         for rk3368 andrdoid7.1 to bypass gralloc DDK bug.
   v1.0x50.1
      1) fix rk3366 android7.1 compile error.
+  v1.0x50.2
+     1) use arm to scale again after rga2 scale fail.
 */
 
 
-#define CONFIG_CAMERAHAL_VERSION KERNEL_VERSION(1, 0x50, 0x1)
+#define CONFIG_CAMERAHAL_VERSION KERNEL_VERSION(1, 0x50, 0x2)
 
 
 /*  */

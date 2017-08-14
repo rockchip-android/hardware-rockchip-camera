@@ -2,6 +2,7 @@
 <BoardFile>
 		<BoardXmlVersion version="v0.0xf.0">
 		</BoardXmlVersion>
+<!--
 		<CamDevie>
 			<HardWareInfo>
 				<Sensor>
@@ -913,4 +914,5 @@
 				</DV>
 			</SoftWareInfo>
 		</CamDevie>
+-->
 </BoardFile>

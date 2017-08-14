@@ -2,6 +2,7 @@
 <BoardFile>
 		<BoardXmlVersion version="v0.0xf.0">
 		</BoardXmlVersion>
+<!--
 		<CamDevie>
 			<HardWareInfo>
 				<Sensor>
@@ -1052,5 +1053,6 @@
 					<DV_1080P name="1080p" width="1920" height="1080" fps="60" support="1"></DV_1080P>
 				</DV>
 			</SoftWareInfo>
-		</CamDevie>	
+		</CamDevie>
+-->
 </BoardFile>

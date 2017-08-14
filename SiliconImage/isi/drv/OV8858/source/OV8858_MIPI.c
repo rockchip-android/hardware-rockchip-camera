@@ -291,165 +291,6 @@ bool bOTP_switch = true;
 #define  RG_Ratio_Typical_R2A_LG_9569A2 (0x129)
 #define  BG_Ratio_Typical_R2A_LG_9569A2 (0x138)
 
-#if 0
-static int check_read_otp(
-    sensor_i2c_write_t*  sensor_i2c_write_p,
-    sensor_i2c_read_t*  sensor_i2c_read_p,
-    sensor_version_get_t* sensor_version_get_p,
-    void* context,
-    int camsys_fd
-)
-{
-    struct otp_struct *otp_ptr = &g_otp_info;
-
-    int otp_flag=0x0, addr, temp, i;
-    //set 0x5002[3] to ¡°0¡±
-    int temp1;
-    int i2c_base_info[3];
-
-    i2c_base_info[0] = Sensor_OTP_SLAVE_ADDR; //otp i2c addr
-    i2c_base_info[1] = 2; //otp i2c reg size
-    i2c_base_info[2] = 1; //otp i2c value size
-    //stream on 
-    sensor_i2c_write_p(context,camsys_fd, OV8858_MODE_SELECT, OV8858_MODE_SELECT_ON, i2c_base_info );
-    
-    temp1 = sensor_i2c_read_p(context,camsys_fd,0x5002,i2c_base_info);
-    sensor_i2c_write_p(context,camsys_fd,0x5002, (0x00 & 0x08) | (temp1 & (~0x08)), i2c_base_info);
-    // read OTP into buffer
-    sensor_i2c_write_p(context,camsys_fd,0x3d84, 0xC0, i2c_base_info);
-    sensor_i2c_write_p(context,camsys_fd,0x3d88, 0x70, i2c_base_info); // OTP start address
-    sensor_i2c_write_p(context,camsys_fd,0x3d89, 0x10, i2c_base_info);
-    sensor_i2c_write_p(context,camsys_fd,0x3d8A, 0x71, i2c_base_info); // OTP end address
-    sensor_i2c_write_p(context,camsys_fd,0x3d8B, 0x84, i2c_base_info);
-    sensor_i2c_write_p(context,camsys_fd,0x3d81, 0x01, i2c_base_info); // load otp into buffer
-    osSleep(10);
-    otp_flag = sensor_i2c_read_p(context,camsys_fd,0x7010, i2c_base_info);
-
-    addr = 0;
-    if((otp_flag & 0xc0) == 0x40) {
-        addr = 0x7011; // base address of info group 1
-    }
-    else if((otp_flag & 0x30) == 0x10) {
-        addr = 0x7016; // base address of info group 2
-    }
-    else if((otp_flag & 0x0c) == 0x04) {
-        addr = 0x701b; // base address of info group 3
-    }
-    if(addr != 0) {
-        (*otp_ptr).flag = 0x80; // valid info and AWB in OTP
-        (*otp_ptr).module_integrator_id = sensor_i2c_read_p(context,camsys_fd,addr, i2c_base_info);
-        (*otp_ptr).lens_id = sensor_i2c_read_p(context,camsys_fd, addr + 1, i2c_base_info);
-        (*otp_ptr).production_year = sensor_i2c_read_p(context,camsys_fd, addr + 2, i2c_base_info);
-        (*otp_ptr).production_month = sensor_i2c_read_p(context,camsys_fd, addr + 3, i2c_base_info);
-        (*otp_ptr).production_day = sensor_i2c_read_p(context,camsys_fd,addr + 4, i2c_base_info);
-    }
-    else {
-        (*otp_ptr).flag = 0x00; // not info and AWB in OTP
-        (*otp_ptr).module_integrator_id = 0;
-        (*otp_ptr).lens_id = 0;
-        (*otp_ptr).production_year = 0;
-        (*otp_ptr).production_month = 0;
-        (*otp_ptr).production_day = 0;
-    }
-
-    // OTP base information and WB calibration data
-    otp_flag = sensor_i2c_read_p(context,camsys_fd,0x7020, i2c_base_info);
-    addr = 0;
-    // OTP AWB Calibration
-    if((otp_flag & 0xc0) == 0x40) {
-        addr = 0x7021; // base address of info group 1
-    }
-    else if((otp_flag & 0x30) == 0x10) {
-        addr = 0x7026; // base address of info group 2
-    }
-    else if((otp_flag & 0x0c) == 0x04) {
-        addr = 0x702b; // base address of info group 3
-    }
-
-    if(addr != 0) {
-        (*otp_ptr).flag |= 0x40; // valid info and AWB in OTP
-        temp = sensor_i2c_read_p(context,camsys_fd,addr + 4, i2c_base_info);
-        (*otp_ptr).rg_ratio = (sensor_i2c_read_p(context,camsys_fd,addr, i2c_base_info)<<2) + ((temp>>6) & 0x03);
-        (*otp_ptr).bg_ratio = (sensor_i2c_read_p(context,camsys_fd,addr + 1, i2c_base_info)<<2) + ((temp>>4) & 0x03);
-        (*otp_ptr).light_rg = (sensor_i2c_read_p(context,camsys_fd,addr + 2, i2c_base_info)<<2) + ((temp>>2) & 0x03);
-        (*otp_ptr).light_bg = (sensor_i2c_read_p(context,camsys_fd,addr + 3, i2c_base_info)<<2) + ((temp) & 0x03);
-        TRACE( OV8858_NOTICE0, "%s awb info in OTP(0x%x,0x%x,0x%x,0x%x)!\n", __FUNCTION__,(*otp_ptr).rg_ratio,(*otp_ptr).bg_ratio,
-                                (*otp_ptr).light_rg,(*otp_ptr).light_bg);
-
-    }
-    else {
-        (*otp_ptr).rg_ratio = 0;
-        (*otp_ptr).bg_ratio = 0;
-        (*otp_ptr).light_rg = 0;
-        (*otp_ptr).light_bg = 0;
-        TRACE( OV8858_ERROR, "%s no awb info in OTP!\n", __FUNCTION__);
-    }
-    
-    // OTP VCM Calibration
-    otp_flag = sensor_i2c_read_p(context,camsys_fd,0x7030, i2c_base_info);
-    addr = 0;
-    if((otp_flag & 0xc0) == 0x40) {
-        addr = 0x7031; // base address of VCM Calibration group 1
-    }
-    else if((otp_flag & 0x30) == 0x10) {
-        addr = 0x7034; // base address of VCM Calibration group 2
-    }
-    else if((otp_flag & 0x0c) == 0x04) {
-        addr = 0x7037; // base address of VCM Calibration group 3
-    }
-    if(addr != 0) {
-        (*otp_ptr).flag |= 0x20;
-        temp = sensor_i2c_read_p(context,camsys_fd,addr + 2, i2c_base_info);
-        (* otp_ptr).VCM_start = (sensor_i2c_read_p(context,camsys_fd,addr, i2c_base_info)<<2) | ((temp>>6) & 0x03);
-        (* otp_ptr).VCM_end = (sensor_i2c_read_p(context,camsys_fd,addr + 1, i2c_base_info) << 2) | ((temp>>4) & 0x03);
-        (* otp_ptr).VCM_dir = (temp>>2) & 0x03;
-    }
-    else {
-        (* otp_ptr).VCM_start = 0;
-        (* otp_ptr).VCM_end = 0;
-        (* otp_ptr).VCM_dir = 0;
-        TRACE( OV8858_INFO, "%s no VCM info in OTP!\n", __FUNCTION__);
-    }
-    // OTP Lenc Calibration
-    otp_flag = sensor_i2c_read_p(context,camsys_fd,0x703a, i2c_base_info);
-    addr = 0;
-    int  checksum2=0;
-    if((otp_flag & 0xc0) == 0x40) {
-        addr = 0x703b; // base address of Lenc Calibration group 1
-    }
-    else if((otp_flag & 0x30) == 0x10) {
-        addr = 0x70a9; // base address of Lenc Calibration group 2
-    }
-    else if((otp_flag & 0x0c) == 0x04) {
-        addr = 0x7117; // base address of Lenc Calibration group 3
-    }
-    if(addr != 0) {
-        (*otp_ptr).flag |= 0x10;
-        for(i=0;i<110;i++) {
-            (* otp_ptr).lenc[i]=sensor_i2c_read_p(context,camsys_fd,addr + i, i2c_base_info);
-            TRACE( OV8858_INFO, "%s lsc 0x%x!\n", __FUNCTION__,(*otp_ptr).lenc[i]);
-        }
-    }
-    else {
-        for(i=0;i<110;i++) {
-        (* otp_ptr).lenc[i]=0;
-        }
-    }
-    for(i=0x7010;i<=0x7184;i++) {
-        sensor_i2c_write_p(context,camsys_fd,i,0, i2c_base_info); // clear OTP buffer, recommended use continuous write to accelarate
-    }
-    //set 0x5002[3] to ¡°1¡±
-    temp1 = sensor_i2c_read_p(context,camsys_fd,0x5002, i2c_base_info);
-    sensor_i2c_write_p(context,camsys_fd,0x5002, (0x08 & 0x08) | (temp1 & (~0x08)), i2c_base_info);
-
-    //stream off 
-    sensor_i2c_write_p(context,camsys_fd, OV8858_MODE_SELECT, OV8858_MODE_SELECT_OFF, i2c_base_info );
-    if((*otp_ptr).flag != 0)
-        return RET_SUCCESS;
-    else
-        return RET_NOTSUPP;
-}
-#endif
 
 static int check_read_otp_R1A(
     sensor_i2c_write_t*  sensor_i2c_write_p,
@@ -466,31 +307,7 @@ static int check_read_otp_R1A(
     i2c_base_info[1] = 2; //otp i2c reg size
     i2c_base_info[2] = 1; //otp i2c value size
 
-#if 0
-    int otp_flag=0x0, addr, temp, i;
-    //set 0x5002[3] to ¡°0¡±
-    int temp1;
-    int i2c_base_info[3];
-
-    i2c_base_info[0] = Sensor_OTP_SLAVE_ADDR; //otp i2c addr
-    i2c_base_info[1] = 2; //otp i2c reg size
-    i2c_base_info[2] = 1; //otp i2c value size
-    //stream on 
-    sensor_i2c_write_p(context,camsys_fd, OV8858_MODE_SELECT, OV8858_MODE_SELECT_ON, i2c_base_info );
-    
-    temp1 = sensor_i2c_read_p(context,camsys_fd,0x5002,i2c_base_info);
-    sensor_i2c_write_p(context,camsys_fd,0x5002, (0x00 & 0x08) | (temp1 & (~0x08)), i2c_base_info);
-    // read OTP into buffer
-    sensor_i2c_write_p(context,camsys_fd,0x3d84, 0xC0, i2c_base_info);
-    sensor_i2c_write_p(context,camsys_fd,0x3d88, 0x70, i2c_base_info); // OTP start address
-    sensor_i2c_write_p(context,camsys_fd,0x3d89, 0x10, i2c_base_info);
-    sensor_i2c_write_p(context,camsys_fd,0x3d8A, 0x71, i2c_base_info); // OTP end address
-    sensor_i2c_write_p(context,camsys_fd,0x3d8B, 0x84, i2c_base_info);
-    sensor_i2c_write_p(context,camsys_fd,0x3d81, 0x01, i2c_base_info); // load otp into buffer
-    osSleep(10);
     otp_flag = sensor_i2c_read_p(context,camsys_fd,0x7010, i2c_base_info);
-#endif
-	otp_flag = sensor_i2c_read_p(context,camsys_fd,0x7010, i2c_base_info);
     addr = 0;
     if((otp_flag & 0xc0) == 0x40) {
         addr = 0x7011; // base address of info group 1
@@ -770,21 +587,25 @@ static int check_read_otp(
 			return RET_NOTSUPP;
 		TRACE( OV8858_ERROR, "%s: OTP slave addr2 works!\n", __FUNCTION__);
 	}
+    g_sensor_version = sensor_i2c_read_p(context,camsys_fd, 0x302a, i2c_base_info);
 
+    if(g_sensor_version == 0xb1)//one type of R1A, this reg value is oxb1.
+          g_sensor_version = OV8858_R1A;
     temp1 = sensor_i2c_read_p(context,camsys_fd,0x5002,i2c_base_info);
     sensor_i2c_write_p(context,camsys_fd,0x5002, (0x00 & 0x08) | (temp1 & (~0x08)), i2c_base_info);
     // read OTP into buffer
     sensor_i2c_write_p(context,camsys_fd,0x3d84, 0xC0, i2c_base_info);
     sensor_i2c_write_p(context,camsys_fd,0x3d88, 0x70, i2c_base_info); // OTP start address
     sensor_i2c_write_p(context,camsys_fd,0x3d89, 0x10, i2c_base_info);
-    sensor_i2c_write_p(context,camsys_fd,0x3d8A, 0x71, i2c_base_info); // OTP end address
-    sensor_i2c_write_p(context,camsys_fd,0x3d8B, 0x84, i2c_base_info);
+    if(g_sensor_version == OV8858_R2A) {
+        sensor_i2c_write_p(context,camsys_fd,0x3d8A, 0x72, i2c_base_info); // OTP end address of 2A chip
+        sensor_i2c_write_p(context,camsys_fd,0x3d8B, 0x0a, i2c_base_info);
+    }else {
+	sensor_i2c_write_p(context,camsys_fd,0x3d8A, 0x71, i2c_base_info); // OTP end address of 1A chip
+	sensor_i2c_write_p(context,camsys_fd,0x3d8B, 0x84, i2c_base_info);
+    }
     sensor_i2c_write_p(context,camsys_fd,0x3d81, 0x01, i2c_base_info); // load otp into buffer
     osSleep(10);
-    g_sensor_version = sensor_i2c_read_p(context,camsys_fd, 0x302a, i2c_base_info);
-	
-	if(g_sensor_version == 0xb1)//one type of R1A, this reg value is oxb1.
-		g_sensor_version = OV8858_R1A;
 	
 	sensor_version_get_p(context,camsys_fd,g_sensor_version,SENSOR_SPECIAL_TAG);
 

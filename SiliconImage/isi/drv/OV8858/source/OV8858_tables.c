@@ -799,47 +799,6 @@ const IsiRegDescription_t OV8858_g_1632x1224P10_twolane_fpschg[] =
 
 const IsiRegDescription_t OV8858_g_3264x2448_twolane[] =
 {
-#if 0      /* ddl@rock-chips.com:  */
-	{0x0100, 0x00,"0x0100",eReadWrite}, 									 
-	{0x030e, 0x00,"0x0100",eReadWrite}, // pll2_rdiv						 
-	{0x030f, 0x09,"0x0100",eReadWrite}, // pll2_divsp						 
-	{0x0312, 0x01,"0x0100",eReadWrite}, // pll2_pre_div0, pll2_r_divdac 	 
-	{0x3015, 0x01,"0x0100",eReadWrite}, //									 
-	{0x3501, 0x4d,"0x0100",eReadWrite}, // exposure M						 
-	{0x3502, 0x40,"0x0100",eReadWrite}, // exposure L						 
-	//{0x3508, 0x04,"0x0100",eReadWrite}, // gain H							 
-	{0x3706, 0x35,"0x0100",eReadWrite}, //									 
-	{0x370a, 0x00,"0x0100",eReadWrite}, //									 
-	{0x370b, 0xb5,"0x0100",eReadWrite}, //									 
-	{0x3778, 0x1b,"0x0100",eReadWrite}, //									 
-	{0x3808, 0x06,"0x0100",eReadWrite}, // x output size H					 
-	{0x3809, 0x60,"0x0100",eReadWrite}, // x output size L					 
-	{0x380a, 0x04,"0x0100",eReadWrite}, // y output size H					 
-	{0x380b, 0xc8,"0x0100",eReadWrite}, // y output size L					 
-	{0x380c, 0x07,"0x0100",eReadWrite}, // HTS H							 
-	{0x380d, 0x88,"0x0100",eReadWrite}, // HTS L							 
-	{0x380e, 0x04,"0x0100",eReadWrite}, // VTS H							 
-	{0x380f, 0xdc,"0x0100",eReadWrite}, // VTS L
-	{0x3814, 0x03,"0x0100",eReadWrite}, // x odd inc						 
-	{0x3821, 0x67,"0x0100",eReadWrite}, // mirror on, bin on				 
-	{0x382a, 0x03,"0x0100",eReadWrite}, // y odd inc						 
-	{0x3830, 0x08,"0x0100",eReadWrite}, //									 
-	{0x3836, 0x02,"0x0100",eReadWrite}, //									 
-	{0x3f0a, 0x80,"0x0100",eReadWrite}, //									 
-	{0x4001, 0x10,"0x0100",eReadWrite}, // total 128 black column			 
-	{0x4022, 0x04,"0x0100",eReadWrite}, // Anchor left end H				 
-	{0x4023, 0xb9,"0x0100",eReadWrite}, // Anchor left end L				 
-	{0x4024, 0x05,"0x0100",eReadWrite}, // Anchor right start H 			 
-	{0x4025, 0x2a,"0x0100",eReadWrite}, // Anchor right start L 			 
-	{0x4026, 0x05,"0x0100",eReadWrite}, // Anchor right end H				 
-	{0x4027, 0x2b,"0x0100",eReadWrite}, // Anchor right end L				 
-	{0x402b, 0x04,"0x0100",eReadWrite}, // top black line number			 
-	{0x402e, 0x08,"0x0100",eReadWrite}, // bottom black line start			 
-	{0x4500, 0x38,"0x0100",eReadWrite}, 									 
-	{0x4600, 0x00,"0x0100",eReadWrite}, 									 
-	{0x4601, 0xcb,"0x0100",eReadWrite}, 									 
-	{0x382d, 0x7f,"0x0100",eReadWrite}, 
-#endif									
 	{0x030e, 0x02,"0x0100",eReadWrite}, // pll2_rdiv					
 	{0x030f, 0x04,"0x0100",eReadWrite}, // pll2_divsp					
 	{0x0312, 0x03,"0x0100",eReadWrite}, // pll2_pre_div0, pll2_r_divdac 
@@ -1270,7 +1229,6 @@ const IsiRegDescription_t OV8858_g_1632x1224_fourlane[] =
 {0x4600 , 0x00 , "0x0100",eReadWrite},
 {0x4601 , 0xcb , "0x0100",eReadWrite},
 {0x382d , 0x7f , "0x0100",eReadWrite},
-//{0x0100 , 0x01 , "0x0100",eReadWrite},
 {0x0000 ,0x00,"eTableEnd",eTableEnd}
 
 };
@@ -1411,7 +1369,6 @@ const IsiRegDescription_t OV8858_g_3264x2448_fourlane[] =
 {0x4600 , 0x01 , "0x0100",eReadWrite},
 {0x4601 , 0x97 , "0x0100",eReadWrite},
 {0x382d , 0xff , "0x0100",eReadWrite},
-//{0x0100 , 0x01 , "0x0100",eReadWrite},
 {0x0000 ,0x00,"eTableEnd",eTableEnd}
 
 };
@@ -1778,7 +1735,6 @@ const IsiRegDescription_t OV8858_g_aRegDescription_fourlane_R2A[] =
 	{0x4041, 0xc6, "0x0100",eReadWrite}, // BLC 																			 
 	{0x3007, 0x80, "0x0100",eReadWrite},																					 
 	{0x400a, 0x01, "0x0100",eReadWrite},																					 
-	{0x0100, 0x01, "0x0100",eReadWrite},																					 
 	{0x0000 ,0x00,"eTableEnd",eTableEnd}
 };
 
@@ -1822,51 +1778,8 @@ const IsiRegDescription_t OV8858_g_1632x1224_fourlane_R2A[] =
 	{0x4600, 0x00, "0x0100", eReadWrite},
 	{0x4601, 0xcb, "0x0100", eReadWrite},
 	{0x382d, 0x7f, "0x0100", eReadWrite},
-	{0x0100, 0x01, "0x0100", eReadWrite},
 	{0x0000 ,0x00, "eTableEnd",eTableEnd}
 };
-#if 0
-const IsiRegDescription_t OV8858_g_1632x1224P30_fourlane_fpschg_R2A[] =
-{    
-	{0x380e, 0x04,"0x0100",eReadWrite}, // VTS H							 
-	{0x380f, 0xdc,"0x0100",eReadWrite}, // VTS L
-	{0x0000 ,0x00,"eTableEnd",eTableEnd}
-
-};
-
-const IsiRegDescription_t OV8858_g_1632x1224P25_fourlane_fpschg_R2A[] =
-{  	
-	{0x380e, 0x05,"0x0100",eReadWrite}, // VTS H							 
-	{0x380f, 0xd4,"0x0100",eReadWrite}, // VTS L
-	{0x0000 ,0x00,"eTableEnd",eTableEnd}
-};
-
-
-const IsiRegDescription_t OV8858_g_1632x1224P20_fourlane_fpschg_R2A[] =
-{
-    {0x380e, 0x07,"0x0100",eReadWrite}, // VTS H							 
-	{0x380f, 0x4a,"0x0100",eReadWrite}, // VTS L
-	{0x0000 ,0x00,"eTableEnd",eTableEnd}
-
-};
-
-const IsiRegDescription_t OV8858_g_1632x1224P15_fourlane_fpschg_R2A[] =
-{
-		
-	{0x380e, 0x09,"0x0100",eReadWrite}, // VTS H							 
-	{0x380f, 0xb8,"0x0100",eReadWrite}, // VTS L
-	{0x0000 ,0x00,"eTableEnd",eTableEnd}
-
-};
-
-const IsiRegDescription_t OV8858_g_1632x1224P10_fourlane_fpschg_R2A[] =
-{ 
-	{0x380e, 0x0e,"0x0100",eReadWrite}, // VTS H							 
-	{0x380f, 0x94,"0x0100",eReadWrite}, // VTS L	
-	{0x0000 ,0x00,"eTableEnd",eTableEnd}
-
-};
-#endif
 
 const IsiRegDescription_t OV8858_g_3264x2448_fourlane_R2A[] =
 {
@@ -1908,49 +1821,8 @@ const IsiRegDescription_t OV8858_g_3264x2448_fourlane_R2A[] =
 	{0x4600, 0x01, "0x0100", eReadWrite},
 	{0x4601, 0x97, "0x0100", eReadWrite},
 	{0x382d, 0xff, "0x0100", eReadWrite},
-	{0x0100, 0x01, "0x0100", eReadWrite},
 	{0x0000, 0x00, "eTableEnd",eTableEnd}
 };
-
-#if 0
-const IsiRegDescription_t OV8858_g_3264x2448P7_fourlane_fpschg_R2A[] =
-{
-    {0x380e, 0x26,"0x0100",eReadWrite}, // VTS H						
-	{0x380f, 0xa8,"0x0100",eReadWrite}, // VTS L						
-    {0x0000 ,0x00,"eTableEnd",eTableEnd}
-};
-const IsiRegDescription_t OV8858_g_3264x2448P10_fourlane_fpschg_R2A[] =
-{
-    {0x380e, 0x1c,"0x0100",eReadWrite}, // VTS H						
-	{0x380f, 0xfe,"0x0100",eReadWrite}, // VTS L						
-    {0x0000 ,0x00,"eTableEnd",eTableEnd}
-};
-const IsiRegDescription_t OV8858_g_3264x2448P15_fourlane_fpschg_R2A[] =
-{
-    {0x380e, 0x13,"0x0100",eReadWrite}, // VTS H						
-	{0x380f, 0x54,"0x0100",eReadWrite}, // VTS L						
-    {0x0000 ,0x00,"eTableEnd",eTableEnd}
-};
-const IsiRegDescription_t OV8858_g_3264x2448P20_fourlane_fpschg_R2A[] =
-{
-    {0x380e, 0x0e,"0x0100",eReadWrite}, // VTS H						
-	{0x380f, 0x7f,"0x0100",eReadWrite}, // VTS L						
-    {0x0000 ,0x00,"eTableEnd",eTableEnd}
-};
-const IsiRegDescription_t OV8858_g_3264x2448P25_fourlane_fpschg_R2A[] =
-{
-    {0x380e, 0x0b,"0x0100",eReadWrite}, // VTS H						
-	{0x380f, 0x98,"0x0100",eReadWrite}, // VTS L						
-    {0x0000 ,0x00,"eTableEnd",eTableEnd}
-};
-
-const IsiRegDescription_t OV8858_g_3264x2448P30_fourlane_fpschg_R2A[] =
-{
-    {0x380e, 0x09,"0x0100",eReadWrite}, // VTS H						
-	{0x380f, 0xaa,"0x0100",eReadWrite}, // VTS L						
-    {0x0000 ,0x00,"eTableEnd",eTableEnd}
-};
-#endif
 
 const IsiRegDescription_t OV8858_g_aRegDescription_twolane_R2A[] =
 {
@@ -2273,7 +2145,6 @@ const IsiRegDescription_t OV8858_g_aRegDescription_twolane_R2A[] =
 	{0x4041, 0xc6, "0x0100",eReadWrite}, // BLC
 	{0x3007, 0x80, "0x0100",eReadWrite},
 	{0x400a, 0x01, "0x0100",eReadWrite},
-	{0x0100, 0x01, "0x0100",eReadWrite},
 	{0x0000, 0x00, "eTableEnd",eTableEnd}
 };
 
@@ -2319,7 +2190,6 @@ const IsiRegDescription_t OV8858_g_1632x1224_twolane_R2A[] =
 	{0x4600,0x00,"0x0100",eReadWrite},
 	{0x4601,0xcb,"0x0100",eReadWrite},
 	{0x382d,0x7f,"0x0100",eReadWrite},
-	{0x0100,0x01,"0x0100",eReadWrite},
 	{0x0000,0x00,"eTableEnd",eTableEnd}
 };
 

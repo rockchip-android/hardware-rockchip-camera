@@ -893,16 +893,16 @@ void CameraIspAdapter::initDefaultParameters(int camFd)
 	    while (m_camDevice->getSensorCaps(pCaps) == true) {
          
             memset(string,0x00,sizeof(string));        
-            if (ISI_FPS_GET(pCaps.Resolution) >= 15) {
+            if (ISI_FPS_GET(pCaps.Resolution) >= 10) {
                 pixels = ISI_RES_W_GET(pCaps.Resolution)*ISI_RES_H_GET(pCaps.Resolution)*10;                
-                if (pixels > 1280*720*9) {
+                if (pixels > 1280*720*9 && (ISI_RES_W_GET(pCaps.Resolution)>= 1280)) {
                     if (chk_720p == false) {
                         strcat(string,",1280x720");
                         chk_720p = true;
                     }
                 }
 
-                if (pixels > 1920*1080*9) {
+                if (pixels > 1920*1080*9 && (ISI_RES_W_GET(pCaps.Resolution)>= 1920)) {
                     if (chk_1080p == false) {
                         strcat(string,",1920x1080");
                         chk_1080p = true;
@@ -1015,7 +1015,7 @@ void CameraIspAdapter::initDefaultParameters(int camFd)
                 } else if (pixels > 3000000) {
                     parameterString.append(",1600x1200,1024x768");
                 } else if (pixels >= 1920000) {
-                    parameterString.append(",1600x1200,1024x768");
+                    parameterString.append(",1024x768");
                 }
             } else if (max_w*10/max_h == 160/9) {   // 16:9 Sensor
 

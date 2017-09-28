@@ -715,14 +715,18 @@ int camera_get_number_of_cameras(void)
     char *ptr,**ptrr;
     char version[PROPERTY_VALUE_MAX];
     char property[PROPERTY_VALUE_MAX];
+    char usbcameraPlug[PROPERTY_VALUE_MAX];
     int hwrotation = 0;
 	camera_board_profiles * profiles = NULL;
     size_t nCamDev = 0;
     char trace_level[PROPERTY_VALUE_MAX];
 	struct timeval t0, t1;
     ::gettimeofday(&t0, NULL);
-	
-    if (gCamerasNumber > 0)
+
+    property_get("persist.sys.usbcamera.status", usbcameraPlug, "");
+    bool plugstate = (strcmp(usbcameraPlug, "add") == 0)
+        || (strcmp(usbcameraPlug, "remove") == 0);
+    if (gCamerasNumber > 0 && !plugstate)
         goto camera_get_number_of_cameras_end;
 
     {
@@ -835,7 +839,7 @@ int camera_get_number_of_cameras(void)
             fd = open(cam_path, O_RDONLY);
             if (fd < 0) {
                 LOGE("Open %s failed! strr: %s",cam_path,strerror(errno));
-                break;
+                continue;
             } 
             LOGD("Open %s success!",cam_path);
 

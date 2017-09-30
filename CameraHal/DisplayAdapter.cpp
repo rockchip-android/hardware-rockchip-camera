@@ -97,7 +97,7 @@ int DisplayAdapter::startDisplay(int width, int height)
     Semaphore sem;
     LOG_FUNCTION_NAME
     mDisplayLock.lock();
-    #if 0
+    #if 1
         if (mDisplayRuning == STA_DISPLAY_RUNNING) {
             LOGD("%s(%d): display thread is already run",__FUNCTION__,__LINE__);
             goto cameraDisplayThreadStart_end;
@@ -185,6 +185,7 @@ int DisplayAdapter::setPreviewWindow(struct preview_stream_ops* window)
     //window null ?
     LOG_FUNCTION_NAME
     if(window == mANativeWindow){
+        LOGD("preview native window is the same,so ignore it.");
         return 0;
     }
     if(mANativeWindow){

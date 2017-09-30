@@ -144,7 +144,10 @@ void CameraUSBAdapter::initDefaultParameters(int camFd)
     params.set(KEY_PREVIEW_W_FORCE,"0");
     params.set(KEY_PREVIEW_H_FORCE,"0");
     params.set(CameraParameters::KEY_SUPPORTED_PREVIEW_SIZES, parameterString.string());
-    params.setPreviewSize(640,480);
+    if(parameterString.contains("640x480"))
+        params.setPreviewSize(640,480);
+    else
+        params.setPreviewSize(mCamDriverFrmWidthMax,mCamDriverFrmHeightMax);
     /*picture size setting*/      
     params.set(CameraParameters::KEY_SUPPORTED_PICTURE_SIZES, parameterString.string());        
     params.setPictureSize(mCamDriverFrmWidthMax,  mCamDriverFrmHeightMax);        

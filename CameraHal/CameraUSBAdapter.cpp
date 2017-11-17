@@ -94,11 +94,11 @@ void CameraUSBAdapter::initDefaultParameters(int camFd)
 	mCamDriverFrmHeightMax = 0;
     while ((ret = ioctl(mCamFd, VIDIOC_ENUM_FRAMESIZES, &fsize)) == 0) {
         if (fsize.type == V4L2_FRMSIZE_TYPE_DISCRETE) {  
-			if((fsize.discrete.width%16 || fsize.discrete.height%16) && fsize.discrete.height != 1080)
+			/*if((fsize.discrete.width%16 || fsize.discrete.height%16) && fsize.discrete.height != 1080)
 			{
 				fsize.index++;
 				continue;
-			}
+			}*/
 #ifdef LAPTOP
             char *call_process = getCallingProcess();
             if (fsize.discrete.width == 320 && fsize.discrete.height == 240
@@ -1017,7 +1017,6 @@ int CameraUSBAdapter::reprocessFrame(FramInfo_s* frame)
         ret =  -1;
     }
 
-    frame->frame_fmt = V4L2_PIX_FMT_NV12;
     frame->phy_addr = phy_addr;
     frame->vir_addr = mPreviewBufProvider->getBufVirAddr(frame->frame_index);
     frame->zoom_value = mZoomVal;
@@ -1025,18 +1024,11 @@ int CameraUSBAdapter::reprocessFrame(FramInfo_s* frame)
 	int w,h;
 	w = frame->frame_width;
 	h = frame->frame_height;
-	if((w&0x0f) || (h&0x0f)){
+	if(((w&0x0f) || (h&0x0f)) && (frame->frame_fmt == V4L2_PIX_FMT_MJPEG)){
         frame->frame_width = ((w+15)&(~15));
         frame->frame_height = ((h+15)&(~15));
-		/*char *buf = (char*)malloc(w*h*3/2);
-		if(buf != NULL){
-			memcpy(buf,(void*)frame->vir_addr,w*h);
-			memcpy(buf+w*h,(void*)(frame->vir_addr+((w+15)&0xfff0)*((h+15)&0xfff0)), w*h/2);
-			memcpy((void*)frame->vir_addr,buf,w*h*3/2);
-			free(buf);
-		}*/
 	}
-
+    frame->frame_fmt = V4L2_PIX_FMT_NV12;
     //do zoom here?
     return ret;
     

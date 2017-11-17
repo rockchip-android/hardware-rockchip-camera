@@ -476,14 +476,6 @@ extern "C" int rga_nv12_scale_crop(
 	//src.hnd = NULL;
 	//dst.hnd = NULL;
 
-	/*has something wrong with rga of rk312x mirror operation*/
-#if defined(TARGET_RK312x)
-		if(mirror){
-			 LOGE("%s:rk312x rga not support mirror",__func__);
-			 ret = -1;
-			 goto failed;
-		}
-#endif 
 	/*rk3188 do not support yuv to yuv scale by rga*/
 #if defined(TARGET_RK3188)
 		{
@@ -522,7 +514,10 @@ extern "C" int rga_nv12_scale_crop(
 		zoom_left_offset = ((src_width-zoom_cropW)>>1) & (~0x01);
 		zoom_top_offset= ((src_height-zoom_cropH)>>1) & (~0x01);
 	}
-
+    //usb camera height align to 16,the extra eight rows need to be croped.
+    if(1952 == src_height || 1088 == src_height || 608 == src_height){
+        zoom_top_offset = zoom_top_offset & (~0x07);
+    }
 	rga_set_rect(&src.rect, zoom_left_offset,zoom_top_offset,
 		zoom_cropW,zoom_cropH,src_width,src_height,HAL_PIXEL_FORMAT_YCrCb_NV12);
 	if (isDstNV21)
@@ -559,13 +554,7 @@ extern "C" int rga_nv12_scale_crop(int src_width, int src_height, char *src, sho
 	int ratio = 0;
 	int src_top_offset=0,src_left_offset=0,dst_top_offset=0,dst_left_offset=0,zoom_top_offset=0,zoom_left_offset=0;
 
-	/*has something wrong with rga of rk312x mirror operation*/
-	#if defined(TARGET_RK312x)
-		if(mirror){
-			return arm_camera_yuv420_scale_arm(V4L2_PIX_FMT_NV12, (isDstNV21 ? V4L2_PIX_FMT_NV21:V4L2_PIX_FMT_NV12), 
-				src, (char *)dst,src_width, src_height,dst_width, dst_height,mirror,zoom_val);
-		}
-	#endif 
+
 	/*rk3188 do not support yuv to yuv scale by rga*/
 	#if defined(TARGET_RK3188)
 		return arm_camera_yuv420_scale_arm(V4L2_PIX_FMT_NV12, (isDstNV21 ? V4L2_PIX_FMT_NV21:V4L2_PIX_FMT_NV12), 
@@ -665,6 +654,10 @@ extern "C" int rga_nv12_scale_crop(int src_width, int src_height, char *src, sho
 		    Rga_Request.src.x_offset = src_left_offset & (~0x1f);//32 alignment,rga's bug
 		    Rga_Request.src.y_offset = src_top_offset & (~0xf);
 #else
+            //usb camera height align to 16,the extra eight rows need to be croped.
+            if(1952 == src_height || 1088 == src_height || 608 == src_height){
+                src_top_offset = src_top_offset & (~0x07);
+            }
 		    Rga_Request.src.x_offset = src_left_offset & (~0x01);
 		    Rga_Request.src.y_offset = src_top_offset & (~0x01);
 #endif

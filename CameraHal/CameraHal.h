@@ -742,10 +742,14 @@ v1.0x4f.0:
   v1.0x50.3
      1) add usb camera hot-plugin-out support.
      2) add ov8865 driver to compile.
+  v1.0x50.4
+     1)rk312x support mirror and flip with rga.
+     2)usb camera's width and height need align to 16,the extra eight rows need to be croped
+       of some resolution such as 2592x1952,1920x1088,800x608.
 */
 
 
-#define CONFIG_CAMERAHAL_VERSION KERNEL_VERSION(1, 0x50, 0x3)
+#define CONFIG_CAMERAHAL_VERSION KERNEL_VERSION(1, 0x50, 0x4)
 
 
 /*  */

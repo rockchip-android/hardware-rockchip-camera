@@ -970,6 +970,7 @@ int CameraSOCAdapter::cameraConfig(const CameraParameters &tmpparams,bool isInit
 				params.set(CameraParameters::KEY_FLASH_MODE,(mflashMode?mflashMode:CameraParameters::FLASH_MODE_OFF));
 				err = -1;
                 LOGE("%s(%d): flashMode %s is not support",__FUNCTION__,__LINE__,flashMode);
+                return BAD_VALUE;
 			} else {
 				extCtrInfo.id = mFlashMode_menu[i].id;
 				extCtrInfo.value = mFlashMode_menu[i].index;
